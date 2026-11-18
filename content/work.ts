@@ -152,7 +152,7 @@ export const home = {
 
   trust: {
     chapter: 'Trust',
-    // Paraphrased from Moin's own account (audio 15:55). Confirm wording before launch.
+    // Paraphrased from Moin's own account. Confirm wording before launch.
     quote: ['“Creativity is up to you.', 'Just make my brand look good.”'],
     cite: 'What clients tell him',
     after: 'He takes a brand from the brief to the final frame: idea, look, shoot, edit and rollout.',
