@@ -1,0 +1,35 @@
+﻿# Phase 0 audio: private, never commit
+docs/audio/
+tools/.venv/
+tools/chunks/
+*.aac
+Saturday_at_08-55.aac
+
+node_modules/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+tools/shot/node_modules/
+tools/shot/out/
+tools/*.log
+tools/*.txt
+tools/*.tmp
+tools/shot/*.log
+
+# Private: notes taken from the client meeting audio (not used by the site)
+content/moin-facts.ts
+docs/archive-v1/content/moin-facts.ts
+tools/transcribe.py
+
+# Debug output from local tooling
+tools/*.err
+tools/*.out
+tools/shot/*.err
+tools/shot/*.out
+tools/shot/*.txt
+
+# Local scratch files
+env.txt
+/moin-filming.png
+.vercel
+.env*

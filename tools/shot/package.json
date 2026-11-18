@@ -1,0 +1,8 @@
+{
+  "name": "moin-film-shots",
+  "private": true,
+  "description": "Local visual check: drives installed Chrome headless against the dev server. Not part of the site.",
+  "dependencies": {
+    "puppeteer-core": "24.10.0"
+  }
+}
