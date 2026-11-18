@@ -1,22 +1,39 @@
-# Moin Vahora: portfolio
+# Moin Vahora · Portfolio
 
-Two pages over one WebGL stage. Built with Next.js 15 (App Router), Lenis smooth scroll and a plain WebGL 1 shader (`src/lib/stage.ts`). There is no Tailwind; styles live in `src/app/globals.css`.
+The portfolio of **Moin Vahora**, editor and creative lead from Ahmedabad, featured on [IMDb](https://www.imdb.com/name/nm11477653/).
 
-- **`/` Home:** Moin's story in eleven chapters: Cut, Listen, Circle, Build, Cross, Stage, Scale, Lead, Credit, Moin, Contact. Copy is in `content/story.ts` and components are in `src/components/story/Story.tsx`.
-- **`/work` Work:** the full portfolio, one project per screen. Copy is in `content/work.ts` and components are in `src/components/film/Chapters.tsx`.
+Live: **https://moinvahora.vercel.app**
 
-**Run:** `npm.cmd install`, then `npm.cmd run dev`, then open http://localhost:3000. Type check: `npm.cmd run typecheck`.
+## Pages
 
-**How motion works:** each chapter is a tall section with a sticky stage. Every frame, `lib/timeline.ts` measures the chapters. The chapter on screen sets the stage targets (`direct({...})` in `lib/director.ts`) and toggles `.is-in` / `.is-past` on elements that have `data-at` / `data-out` (in units of pinned progress). The stage eases toward its targets. Stage effects: dissolve, film burn, warp, static, lens defocus (`focus`), sound ripples (`pulse`), hard cuts (`cut`).
+- **`/`** · The story: a short loader, the hero ("I build brands."), the news-desk edit, then an immersive film section through the work (the big rooms, the garba thread, concept to creation, Australia, the stage), and out again to meet Moin and get in touch.
+- **`/work`** · Every project, filterable by Brands, Events, Music & stage, Film & series and Australia, as a list or a grid.
+- **`/work/[project]`** · A case study for each project.
+- **`/work/film`** · Selected work as a cinematic reel.
 
-**Images:** all files in `public/images` are open-licence stand-ins. To swap in Moin's frames, keep the same filenames, or edit `storyShots` and `shots`.
+## Stack
 
-**Still to confirm** (marked `// CONFIRM` in `content/story.ts`):
-- His role on the Hellaro documentary.
-- The "merit…immigration" brand name.
-- Details for Victory Group, Grosco, AM Advisory, 1SELL, Organic Mantra, WholesaleSelect and Hoon Taaro Re.
-- The wording of the client quote.
+Next.js 15 (App Router, statically generated), React 18, Lenis smooth scroll, and a plain WebGL 1 shader for the film stage (`src/lib/stage.ts`). No UI framework; styles live in `src/app/globals.css`. Type: Bricolage Grotesque and Geist Mono.
 
-**Visual check:** `node tools/shot/shoot.mjs desktop|mobile|reduced [/route]` writes frames to `tools/shot/out/<mode>-<route>/`. To review them as a grid, run `node tools/shot/sheet.mjs <dir> <cols> <out.jpg>`.
+## Edit content
 
-The previous single-page version is archived in `docs/archive-v1`.
+All copy lives in `content/`, so components hold no text:
+
+- `content/story.ts` · home page
+- `content/projects.ts` · projects and case studies
+- `content/work.ts` · the `/work/film` reel
+
+Images are in `public/images/`. Most are open-licence stand-ins until Moin's own frames replace them; keep the same filenames to swap them in.
+
+## Run locally
+
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm run typecheck
+npm run build
+```
+
+Pushing to `main` redeploys the live site on Vercel.
+
+© 2026 Moin Vahora
