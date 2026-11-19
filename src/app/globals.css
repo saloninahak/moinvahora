@@ -4478,3 +4478,492 @@ html.is-modal .dock {
   line-height: 1.4;
   color: var(--mute);
 }
+
+/* ==================================================================
+   /work = THE LEDGER: cream paper, black ink. No film stage.
+   Flips the palette for the whole page (chrome included), then puts
+   the contact panel back on its own dark glass.
+   ================================================================== */
+
+html:has(.page--ledger) {
+  --ink: #ece6d8;
+  --paper: #121110;
+  --mute: rgba(18, 17, 16, 0.66);
+  --dim: rgba(18, 17, 16, 0.46);
+  --line: rgba(18, 17, 16, 0.16);
+  --glass: rgba(236, 230, 216, 0.7);
+  --glass-line: rgba(18, 17, 16, 0.16);
+  color-scheme: light;
+}
+
+html:has(.page--ledger) body {
+  background:
+    radial-gradient(80% 60% at 85% 0%, rgba(255, 106, 43, 0.1), transparent 60%),
+    var(--ink);
+}
+
+/* Paper grain over the whole sheet. */
+html:has(.page--ledger) body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+}
+
+.page--ledger {
+  position: relative;
+  z-index: 2;
+}
+
+/* Chrome on paper. */
+html:has(.page--ledger) .hud {
+  background: linear-gradient(to bottom, rgba(236, 230, 216, 0.9), transparent);
+}
+
+html:has(.page--ledger) .dock {
+  background: rgba(18, 17, 16, 0.88);
+  border-color: rgba(236, 230, 216, 0.12);
+}
+
+html:has(.page--ledger) .dock__btn {
+  background: #ece6d8;
+  color: #121110;
+}
+
+html:has(.page--ledger) .dock__btn--ghost {
+  background: transparent;
+  color: #ece6d8;
+}
+
+/* The contact panel stays dark glass on every page. */
+.cp {
+  --ink: #06090c;
+  --paper: #f3efe7;
+  --mute: rgba(243, 239, 231, 0.66);
+  --dim: rgba(243, 239, 231, 0.42);
+  --line: rgba(243, 239, 231, 0.16);
+  --glass: rgba(20, 24, 28, 0.38);
+  --glass-line: rgba(243, 239, 231, 0.16);
+}
+
+/* Ledger typography: tighter display, ruled rows, ember accents. */
+.page--ledger .title--xl {
+  font-weight: 800;
+  font-stretch: 75%;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.page--ledger .index__head {
+  position: relative;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--paper);
+}
+
+.page--ledger .index__bar {
+  background: rgba(236, 230, 216, 0.82);
+}
+
+.page--ledger .chip[aria-pressed='true'] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.page--ledger .rows {
+  border-top: 0;
+}
+
+.page--ledger .row {
+  border-bottom: 1px solid var(--line);
+}
+
+.page--ledger .row__title {
+  font-weight: 700;
+  font-stretch: 80%;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.page--ledger .row__a:hover .row__title,
+.page--ledger .row__a:focus-visible .row__title {
+  font-weight: 800;
+  font-stretch: 92%;
+}
+
+.page--ledger .rows:hover .row__a {
+  opacity: 0.32;
+}
+
+.page--ledger .rows .row__a:hover,
+.page--ledger .rows .row__a:focus-visible {
+  opacity: 1;
+}
+
+.page--ledger .card__img,
+.page--ledger .case__figure {
+  box-shadow: none;
+}
+
+/* Two columns: the ruled list, and the contact sheet that slides out. */
+.ledger {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.peek {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .peek {
+    display: block;
+    position: fixed;
+    z-index: 3;
+    top: 50%;
+    right: var(--pad);
+    width: min(22vw, 22rem);
+    aspect-ratio: 4 / 5;
+    transform: translateY(-50%) translateX(2rem) rotate(2.4deg);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.4s var(--ease),
+      transform 0.7s var(--ease);
+  }
+
+  .peek.is-on {
+    opacity: 1;
+    transform: translateY(-50%) rotate(-1.6deg);
+  }
+
+  .peek__fig {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 0.5rem;
+    padding: 0.6rem 0.6rem 0.4rem;
+    background: #f7f3e9;
+    box-shadow: 0 30px 60px rgba(18, 17, 16, 0.28), 0 0 0 1px rgba(18, 17, 16, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .peek__fig.is-on {
+    opacity: 1;
+  }
+
+  .peek__fig img {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    filter: contrast(1.05) saturate(0.92);
+  }
+
+  .peek__fig figcaption {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #121110;
+  }
+
+  /* Keep the list clear of the sheet. */
+  .page--ledger .row__cats {
+    display: none;
+  }
+}
+
+/* The way into cinema mode: a ticket stub. */
+.reel-cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  padding: 1.3rem 1.6rem;
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  clip-path: polygon(0 0, 100% 0, 100% 38%, calc(100% - 0.7rem) 50%, 100% 62%, 100% 100%, 0 100%, 0 62%, 0.7rem 50%, 0 38%);
+  transition: transform 0.5s var(--ease);
+}
+
+.reel-cta:hover {
+  transform: translateY(-3px);
+}
+
+.reel-cta__k {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ember);
+}
+
+.reel-cta__t {
+  margin-right: auto;
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 800;
+  font-stretch: 78%;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* ==================================================================
+   /work/film = CINEMA MODE: black, full-bleed, no chrome, a slate per
+   project, letterbox gate, enormous counter, hard end card.
+   ================================================================== */
+
+html:has(.reel) body {
+  background: #000;
+}
+
+html:has(.reel) .stage-host {
+  background: #000;
+}
+
+.reel__exit {
+  position: fixed;
+  z-index: 30;
+  top: 1.25rem;
+  left: var(--pad);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.7rem;
+  border: 1px solid rgba(243, 239, 231, 0.2);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+  transition: background 0.3s ease;
+}
+
+.reel__exit:hover {
+  background: rgba(243, 239, 231, 0.14);
+}
+
+.reel__exit-arrow {
+  transition: transform 0.4s var(--ease);
+}
+
+.reel__exit:hover .reel__exit-arrow {
+  transform: translateX(-0.2rem);
+}
+
+/* Letterbox bars: the picture is a wide cinema frame, not a web page. */
+.reel__gate {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.reel__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: clamp(2.4rem, 11vh, 6rem);
+  background: #000;
+}
+
+.reel__bar--t {
+  top: 0;
+}
+
+.reel__bar--b {
+  bottom: 0;
+}
+
+/* The counter: enormous, outlined, sitting in the bottom bar's edge. */
+.reel__counter {
+  position: absolute;
+  z-index: 3;
+  right: var(--pad);
+  bottom: calc(clamp(2.4rem, 11vh, 6rem) + 0.5rem);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: clamp(5rem, 16vw, 15rem);
+  font-weight: 800;
+  font-stretch: 75%;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(243, 239, 231, 0.55);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.reel__total {
+  font-family: var(--mono);
+  font-size: clamp(0.8rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: rgba(243, 239, 231, 0.55);
+  -webkit-text-stroke: 0;
+}
+
+.reel__slates {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+.reel__slate {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: calc(clamp(2.4rem, 11vh, 6rem) + 1.25rem) var(--pad) calc(clamp(2.4rem, 11vh, 6rem) + 1.5rem);
+  pointer-events: none;
+}
+
+.reel__info {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.reel__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.4rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(243, 239, 231, 0.75);
+}
+
+.reel__client {
+  color: var(--ember);
+}
+
+/* Titles run edge to edge, uppercase, like a poster. */
+.reel__title {
+  max-width: 11ch;
+  font-size: clamp(3.4rem, 11vw, 12rem);
+  font-weight: 800;
+  font-stretch: 75%;
+  letter-spacing: -0.02em;
+  line-height: 0.84;
+  text-transform: uppercase;
+  text-shadow: 0 6px 60px rgba(0, 0, 0, 0.5);
+}
+
+.reel__line {
+  max-width: 34ch;
+  font-size: clamp(1rem, 1.35vw, 1.3rem);
+  line-height: 1.4;
+  color: rgba(243, 239, 231, 0.88);
+}
+
+/* Each slate cuts in (no easing): hard, like a reel change. */
+.reel__slate {
+  visibility: hidden;
+}
+
+.reel__slate.is-in {
+  visibility: visible;
+}
+
+.film .reel__slate .reel__meta,
+.film .reel__slate .reel__line {
+  opacity: 0;
+  transition: opacity 0.5s ease 0.35s;
+}
+
+.film .reel__slate.is-in .reel__meta,
+.film .reel__slate.is-in .reel__line {
+  opacity: 1;
+}
+
+.film .reel__slate.is-past .reel__meta,
+.film .reel__slate.is-past .reel__line {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+/* End card. */
+.reel__end {
+  position: relative;
+  z-index: 4;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  background: #000;
+  padding: 6rem var(--pad);
+}
+
+.reel__end-inner {
+  display: grid;
+  justify-items: start;
+  gap: 0.2rem;
+}
+
+.reel__end-title {
+  margin: 0;
+  font-size: clamp(5rem, 21vw, 24rem);
+  font-weight: 800;
+  font-stretch: 75%;
+  letter-spacing: -0.03em;
+  line-height: 0.8;
+  text-transform: uppercase;
+}
+
+.reel__end-title--light {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--paper);
+}
+
+.reel__end-cta {
+  margin-top: 2rem;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+  border-bottom: 1px solid var(--ember);
+  padding-bottom: 0.35rem;
+}
+
+@media (max-width: 809px) {
+  .reel__counter {
+    font-size: 26vw;
+  }
+
+  .reel__title {
+    max-width: 8ch;
+    font-size: 17vw;
+  }
+
+  .reel__exit {
+    top: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film .reel__slate .reel__meta,
+  .film .reel__slate .reel__line {
+    transition: none;
+  }
+}
