@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { scrollToTarget } from '@/lib/lenis';
+import { ContactPanel, openContact } from '@/components/ContactPanel';
+import { Haptic, buzz } from '@/lib/haptics';
 
 type Props = {
   name: string;
@@ -11,18 +12,19 @@ type Props = {
 };
 
 /**
- * Fixed overlay: name and site nav on top (reachable from every page), the
- * current chapter and timecode in the centre, and a glass dock with the two
- * actions that matter. Chapter text and timecode are written per frame by
- * lib/timeline (no React re-renders). Page changes fade via PageTransition.
+ * Fixed overlay: name on top, the current chapter and timecode in the centre,
+ * and a glass dock with the two actions that matter. "Contact" opens the
+ * contact panel out of the dock on every page. Chapter text and timecode are
+ * written per frame by lib/timeline (no React re-renders).
  */
 export function Hud({ name, primary, contact }: Props) {
   const external = primary.href.startsWith('http');
+  const tap = () => buzz(Haptic.tick, { gesture: true });
 
   return (
     <>
       <header className="hud" aria-label="Site">
-        <Link className="hud__name" href="/">
+        <Link className="hud__name" href="/" onClick={tap}>
           {name}
         </Link>
         <div className="hud__chapter" aria-hidden="true">
@@ -37,26 +39,25 @@ export function Hud({ name, primary, contact }: Props) {
 
       <nav className="dock" aria-label="Actions">
         {external ? (
-          <a className="dock__btn dock__btn--ghost" href={primary.href} target="_blank" rel="noreferrer">
+          <a className="dock__btn dock__btn--ghost" href={primary.href} target="_blank" rel="noreferrer" onClick={tap}>
             <span className="dock__play" aria-hidden="true" />
             {primary.label}
           </a>
         ) : (
-          <Link className="dock__btn dock__btn--ghost" href={primary.href}>
+          <Link className="dock__btn dock__btn--ghost" href={primary.href} onClick={tap}>
             {primary.label}
           </Link>
         )}
-        <a
-          className="dock__btn"
-          href="#end"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToTarget('#end');
-          }}
-        >
+        <button type="button" className="dock__btn dock__btn--contact" onClick={openContact} aria-haspopup="dialog">
+          <i className="dock__live" aria-hidden="true" />
           {contact}
-        </a>
+          <kbd className="dock__kbd" aria-hidden="true">
+            C
+          </kbd>
+        </button>
       </nav>
+
+      <ContactPanel />
     </>
   );
 }

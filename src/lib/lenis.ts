@@ -17,6 +17,13 @@ export function lockScroll(on: boolean) {
   else instance?.start();
 }
 
+/** Pause page scrolling under a modal (the contact panel) without hiding the chrome. */
+export function pauseScroll(on: boolean) {
+  document.documentElement.classList.toggle('is-modal', on);
+  if (on) instance?.stop();
+  else if (!locked) instance?.start();
+}
+
 export const scrollToTarget = (target: string | number) => {
   if (instance) instance.scrollTo(target, { duration: 2.2 });
   else if (typeof target === 'number') window.scrollTo({ top: target });

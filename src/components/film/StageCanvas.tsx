@@ -6,6 +6,7 @@ import { Stage } from '@/lib/stage';
 import { director, resetDirector, type Direction } from '@/lib/director';
 import { flags, tick, resetHud } from '@/lib/timeline';
 import { resetScroll } from '@/lib/lenis';
+import { resetHaptics } from '@/lib/haptics';
 
 /**
  * Fixed full-screen WebGL stage behind the page, driven by one ticker.
@@ -39,6 +40,7 @@ export function StageCanvas({
     if (!gated) flags.gated = false;
     resetDirector(start);
     resetScroll();
+    resetHaptics();
 
     const canvas = document.createElement('canvas');
     canvas.className = 'stage';

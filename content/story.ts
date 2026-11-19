@@ -47,6 +47,32 @@ export const story = {
 
   hud: { name: 'Moin Vahora', primary: { label: 'All work', href: '/work' }, contact: 'Contact' },
 
+  /** The contact panel that opens from the dock on every page. */
+  contactPanel: {
+    status: 'Taking on new projects',
+    city: 'Ahmedabad',
+    tz: 'Asia/Kolkata',
+    title: ['Let’s make something', 'people remember.'],
+    email: 'vahoramoin2896@gmail.com',
+    copy: 'Copy',
+    copied: 'Copied',
+    briefKicker: 'Start a brief · three taps',
+    needLabel: 'What do you need?',
+    needs: ['Brand film', 'Campaign & social', 'Event coverage', 'Music & stage', 'Product film', 'The whole brand'],
+    whenLabel: 'When?',
+    whens: ['This month', 'Next 3 months', 'Just exploring'],
+    send: 'Send the brief',
+    subject: 'Project enquiry',
+    links: [
+      { label: 'Showreel', href: 'https://drive.google.com/drive/folders/1nstx6Bzyc5C8cnlcc5MHw32a-IYcIhM8' },
+      { label: 'IMDb', href: 'https://www.imdb.com/name/nm11477653/' },
+      { label: 'Instagram', href: 'https://www.instagram.com/moin_2896/' },
+      { label: 'LinkedIn', href: 'https://in.linkedin.com/in/moin-vahora-2ba727120' },
+    ],
+    haptics: 'Haptics',
+    hint: 'Press C anywhere · Esc to close',
+  },
+
   /** Loader: fast flipbook of frames, labelled with real work. */
   loader: {
     frames: [

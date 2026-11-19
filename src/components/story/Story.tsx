@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { direct, lerp, range, smooth, steps } from '@/lib/director';
 import { Chapter, Lines, enterShot, setVar, showItem, showSteps } from '@/components/film/kit';
 import { story, storyShots } from '@content/story';
+import { Haptic, hapticOnChange } from '@/lib/haptics';
 
 const shotSrc = (i: number) => storyShots[Math.max(0, Math.min(storyShots.length - 1, i))];
 const pad2 = (n: number) => String(Math.round(n)).padStart(2, '0');
@@ -210,6 +211,9 @@ function Cut() {
         // Playhead sweeps the strip while the razor works, then parks at the end.
         setVar(el, '--ph', range(cutP, 0, 0.72));
         el.classList.toggle('is-final', cutP >= 1);
+        // Feel the razor: a tick per struck word, a firmer cut when they lift out.
+        hapticOnChange('cut-strike', Math.floor(range(cutP, 0, 0.7) * n), Haptic.tick);
+        hapticOnChange('cut-lift', cutP > 0.82 ? 1 : -1, Haptic.cut);
       }}
       className="ch--cut ch--plain"
     >
@@ -300,6 +304,12 @@ function Scale() {
         showItem(el, montage && l > 0 ? i : -1, true);
         el.classList.toggle('is-hold', !montage);
         if (counter.current) counter.current.textContent = `${pad2(montage ? i + 1 : n + 1)} / ${pad2(n + 1)}`;
+        // A rising pulse as the film window opens, a hit on every hard cut
+        // (faster on the second pass), and a heavy landing on the stadium.
+        const opening = range(p, 0.05, window.innerHeight / el.offsetHeight);
+        hapticOnChange('scale-open', opening > 0.5 ? 1 : -1, Haptic.rise);
+        hapticOnChange('scale-hold', montage ? -1 : 1, Haptic.land);
+        hapticOnChange('scale-cut', montage && l > 0 ? Math.floor(beat) : -1, Haptic.cut);
       }}
       className="ch--scale"
     >
@@ -350,6 +360,7 @@ function Circle() {
         setVar(el, '--grow', smooth(s.value / (n - 1)));
         showItem(el, s.index, l > 0.02);
         showSteps(el, l > 0.02 ? s.index + 1 : 0);
+        hapticOnChange('circle', l > 0.02 ? s.index : -1, Haptic.step);
         el.classList.toggle('is-out', l > 0.86);
       }}
       className="ch--circle"
@@ -443,6 +454,9 @@ function Build() {
           last.current = { step, fmt };
           showSteps(el, step);
           showItem(el, step, step >= 0);
+          // A step for each stage of the making, a tick per format, a flourish for the night.
+          hapticOnChange('build-step', step, step >= total - 1 ? Haptic.success : Haptic.step);
+          hapticOnChange('build-fmt', fmt, Haptic.tick);
           el.classList.toggle('is-night', step >= total - 1);
           el.dataset.step = String(step);
           if (fmt >= 0) {
@@ -576,6 +590,8 @@ function Cross() {
       drive={(p, l, el) => {
         direct({ shot: enterShot(el, p, 9, 10), warp: 0.22, dim: lerp(0.45, 0.74, range(l, 0.3, 0.46)), zoom: lerp(1.0, 1.12, l) });
         const d = smooth(range(l, 0.04, 0.3));
+        // Touchdown in Melbourne.
+        hapticOnChange('cross', d >= 0.999 ? 1 : -1, Haptic.land);
         setVar(el, '--draw', d);
         if (path.current && dot.current) {
           const pt = path.current.getPointAtLength(path.current.getTotalLength() * d);
@@ -658,6 +674,7 @@ function Stage() {
         });
         setVar(el, '--pos', pos, 3);
         showItem(el, active, l >= 0.23);
+        hapticOnChange('stage', l >= 0.23 ? active : -1, Haptic.tick);
       }}
       className="ch--stage"
     >
@@ -699,7 +716,9 @@ function Self() {
       name={c.chapter}
       length={1.6}
       drive={(p, _l, el) => {
-        direct({ shot: 14, dim: 0.6, win: 1 - smooth(range(p, 0.05, window.innerHeight / el.offsetHeight)) });
+        const closing = range(p, 0.05, window.innerHeight / el.offsetHeight);
+        direct({ shot: 14, dim: 0.6, win: 1 - smooth(closing) });
+        hapticOnChange('exit', closing > 0.5 ? 1 : -1, Haptic.fall);
       }}
       className="ch--self ch--plain"
     >

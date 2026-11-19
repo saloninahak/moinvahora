@@ -3932,3 +3932,520 @@ html:not(.film-on) .hud__tc {
 .hx__base {
   -webkit-text-stroke: 1px rgba(243, 239, 231, 0.32);
 }
+
+/* ==================================================================
+   CONTACT PANEL: grows out of the dock as a glass sheet
+   ================================================================== */
+
+.dock__btn--contact {
+  border: 0;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dock__live {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #34c77b;
+  box-shadow: 0 0 0 0 rgba(52, 199, 123, 0.6);
+  animation: live-ping 2.4s ease-out infinite;
+}
+
+@keyframes live-ping {
+  0% { box-shadow: 0 0 0 0 rgba(52, 199, 123, 0.55); }
+  70%, 100% { box-shadow: 0 0 0 7px rgba(52, 199, 123, 0); }
+}
+
+.dock__kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  border: 1px solid rgba(6, 9, 12, 0.25);
+  border-radius: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: rgba(6, 9, 12, 0.6);
+}
+
+@media (pointer: coarse) {
+  .dock__kbd {
+    display: none;
+  }
+}
+
+/* While open: the page pauses and the dock steps back. */
+html.is-modal,
+html.is-modal body {
+  overflow: hidden;
+}
+
+html.is-modal .dock {
+  opacity: 0;
+  transform: translateX(-50%) translateY(0.75rem) scale(0.96);
+  pointer-events: none;
+}
+
+.dock {
+  transition:
+    opacity 0.45s var(--ease),
+    transform 0.6s var(--ease);
+}
+
+.cp {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s linear 0.75s;
+}
+
+.cp.is-open {
+  pointer-events: auto;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.cp__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(4, 6, 8, 0.55);
+  backdrop-filter: blur(14px) saturate(0.9);
+  -webkit-backdrop-filter: blur(14px) saturate(0.9);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.5s var(--ease);
+}
+
+.cp.is-open .cp__scrim {
+  opacity: 1;
+}
+
+/* The sheet: closed it is clipped to the dock's pill shape at the bottom
+   centre; opening grows the clip out to the full panel. */
+.cp__sheet {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1rem, 3vh, 1.75rem);
+  width: min(40rem, calc(100vw - 2rem));
+  max-height: calc(100svh - 2.5rem);
+  margin-left: calc(min(40rem, calc(100vw - 2rem)) / -2);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1.25rem clamp(1.25rem, 3vw, 2rem) 1.4rem;
+  border: 1px solid rgba(243, 239, 231, 0.14);
+  border-radius: 1.6rem;
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(255, 106, 43, 0.16), transparent 55%),
+    radial-gradient(90% 70% at 0% 100%, rgba(80, 120, 255, 0.12), transparent 60%),
+    rgba(14, 17, 21, 0.82);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  clip-path: inset(calc(100% - 3.5rem) 32% 0 32% round 999px);
+  opacity: 0;
+  transition:
+    clip-path 0.7s cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 0.35s ease,
+    transform 0.4s var(--ease);
+  scrollbar-width: none;
+}
+
+.cp.is-open .cp__sheet {
+  clip-path: inset(0 0 0 0 round 1.6rem);
+  opacity: 1;
+}
+
+/* Content arrives after the sheet has grown, in order. */
+.cp__in {
+  opacity: 0;
+  transform: translateY(0.9rem);
+  filter: blur(6px);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.7s var(--ease),
+    filter 0.6s var(--ease);
+}
+
+.cp.is-open .cp__in {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition-delay: calc(0.28s + var(--k, 0) * 60ms);
+}
+
+.cp__grab {
+  display: none;
+  justify-content: center;
+  padding: 0 0 0.75rem;
+  touch-action: none;
+}
+
+.cp__grab i {
+  width: 2.6rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: rgba(243, 239, 231, 0.28);
+}
+
+.cp__head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.cp__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--paper);
+}
+
+.cp__live {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #34c77b;
+  animation: live-ping 2.4s ease-out infinite;
+}
+
+.cp__clock {
+  margin-right: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.cp__close {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--glass-line);
+  border-radius: 50%;
+  background: rgba(243, 239, 231, 0.05);
+  color: var(--paper);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    transform 0.4s var(--ease);
+}
+
+.cp__close:hover {
+  background: rgba(243, 239, 231, 0.12);
+  transform: rotate(90deg);
+}
+
+.cp__title {
+  display: grid;
+  margin: clamp(1.25rem, 3.5vh, 2rem) 0 clamp(1rem, 2.6vh, 1.5rem);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 620;
+  font-stretch: 84%;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+}
+
+.cp__title span:last-child {
+  font-weight: 300;
+  color: var(--mute);
+}
+
+.cp__mail {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.45rem 0.45rem 1.1rem;
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  background: rgba(6, 9, 12, 0.35);
+}
+
+.cp__addr {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  font-weight: 460;
+  text-decoration: none;
+}
+
+.cp__copy {
+  flex: none;
+  min-height: 2.6rem;
+  padding: 0 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 620;
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.4s var(--ease);
+}
+
+.cp__copy:active {
+  transform: scale(0.95);
+}
+
+.cp__copy.is-done {
+  background: #34c77b;
+  color: #04140b;
+}
+
+.cp__brief {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(1.25rem, 3vh, 1.75rem);
+  padding-top: clamp(1.1rem, 2.6vh, 1.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.cp__kicker {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ember);
+}
+
+.cp__set {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.cp__set legend {
+  padding: 0;
+  margin-bottom: 0.55rem;
+  font-size: 0.92rem;
+  color: var(--mute);
+}
+
+.cp__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cp__chip {
+  min-height: 2.35rem;
+  padding: 0 0.95rem;
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--paper);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.35s var(--ease);
+}
+
+.cp__chip:hover {
+  border-color: rgba(243, 239, 231, 0.35);
+}
+
+.cp__chip:active {
+  transform: scale(0.96);
+}
+
+.cp__chip[aria-pressed='true'] {
+  background: var(--paper);
+  border-color: var(--paper);
+  color: var(--ink);
+}
+
+.cp__send {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 3.2rem;
+  margin-top: 0.25rem;
+  padding: 0 1.4rem;
+  border-radius: 999px;
+  background: rgba(243, 239, 231, 0.08);
+  border: 1px solid var(--glass-line);
+  color: var(--mute);
+  font-size: 1.02rem;
+  font-weight: 620;
+  text-decoration: none;
+  transition:
+    background 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.cp__send span:last-child {
+  transition: transform 0.5s var(--ease);
+}
+
+.cp__send.is-ready {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: #1a0700;
+}
+
+.cp__send:hover span:last-child {
+  transform: translateX(0.35rem);
+}
+
+.cp__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  margin-top: clamp(1.1rem, 2.6vh, 1.5rem);
+  padding-top: clamp(1rem, 2.4vh, 1.25rem);
+  border-top: 1px solid var(--line);
+}
+
+.cp__links a {
+  font-size: 1.02rem;
+  font-weight: 520;
+  text-decoration: none;
+  color: var(--mute);
+  transition: color 0.25s ease;
+}
+
+.cp__links a:hover {
+  color: var(--paper);
+}
+
+.cp__links a span {
+  color: var(--ember);
+}
+
+.cp__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.cp__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  color: var(--mute);
+}
+
+.cp__toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.cp__track {
+  position: relative;
+  width: 2.1rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  background: rgba(243, 239, 231, 0.16);
+  transition: background 0.3s ease;
+}
+
+.cp__track i {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--paper);
+  transition: transform 0.35s var(--ease);
+}
+
+.cp__toggle input:checked + .cp__track {
+  background: #34c77b;
+}
+
+.cp__toggle input:checked + .cp__track i {
+  transform: translateX(0.9rem);
+}
+
+.cp__toggle input:focus-visible + .cp__track {
+  outline: 1px solid var(--paper);
+  outline-offset: 3px;
+}
+
+/* Phones: a bottom sheet with a grab bar, full width. */
+@media (max-width: 809px) {
+  .cp__sheet {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    margin-left: 0;
+    max-height: 92svh;
+    padding-bottom: calc(1.4rem + env(safe-area-inset-bottom));
+    border-radius: 1.6rem 1.6rem 0 0;
+    clip-path: inset(calc(100% - 3.5rem) 25% 1rem 25% round 999px);
+  }
+
+  .cp.is-open .cp__sheet {
+    clip-path: inset(0 0 0 0 round 1.6rem 1.6rem 0 0);
+  }
+
+  .cp__grab {
+    display: flex;
+  }
+
+  .cp__clock,
+  .cp__hint {
+    display: none;
+  }
+
+  .cp__close {
+    margin-left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp__sheet,
+  .cp__in,
+  .cp__scrim {
+    transition: opacity 0.2s linear !important;
+  }
+
+  .cp__sheet {
+    clip-path: none;
+  }
+
+  .dock__live,
+  .cp__live {
+    animation: none;
+  }
+}
