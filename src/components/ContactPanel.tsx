@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent } from 'react';
 import { pauseScroll } from '@/lib/lenis';
-import { Haptic, buzz, hapticsOn, hapticsSupport, setHapticsOn } from '@/lib/haptics';
+import { Haptic, buzz, hapticsOn, hapticsSupport, setHapticsOn, testBuzz } from '@/lib/haptics';
 import { story } from '@content/story';
 
 const EVENT = 'moin:contact';
@@ -165,6 +165,20 @@ export function ContactPanel() {
     if (next) buzz(Haptic.success, { gesture: true });
   };
 
+  const [testNote, setTestNote] = useState('');
+  const runTest = () => {
+    const r = testBuzz();
+    setTestNote(
+      r === 'ok'
+        ? 'Sent. Nothing? Turn on vibration or touch feedback in your phone’s sound settings.'
+        : r === 'blocked'
+          ? 'This browser blocked vibration. Try Chrome.'
+          : r === 'tap'
+            ? 'iPhone: taps only, no scroll haptics.'
+            : 'No vibration on this device.',
+    );
+  };
+
   return (
     <div className={`cp${open ? ' is-open' : ''}`} aria-hidden={!open}>
       <button type="button" className="cp__scrim" tabIndex={-1} aria-label="Close contact" onClick={close} />
@@ -238,18 +252,28 @@ export function ContactPanel() {
 
         <footer className="cp__foot cp__in" style={{ '--k': 5 } as CSSProperties}>
           {support !== 'none' ? (
-            <label className="cp__toggle">
-              <input type="checkbox" role="switch" checked={haptic} onChange={toggleHaptics} />
-              <span className="cp__track" aria-hidden="true">
-                <i />
-              </span>
-              {c.haptics}
-            </label>
+            <span className="cp__hap">
+              <label className="cp__toggle">
+                <input type="checkbox" role="switch" checked={haptic} onChange={toggleHaptics} />
+                <span className="cp__track" aria-hidden="true">
+                  <i />
+                </span>
+                {c.haptics}
+              </label>
+              <button type="button" className="cp__test" onClick={runTest}>
+                Test
+              </button>
+            </span>
           ) : (
             <span />
           )}
           <span className="cp__hint">{c.hint}</span>
         </footer>
+        {testNote ? (
+          <p className="cp__note" role="status">
+            {testNote}
+          </p>
+        ) : null}
       </section>
     </div>
   );

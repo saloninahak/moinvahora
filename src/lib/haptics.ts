@@ -13,24 +13,30 @@
  */
 
 const KEY = 'moin.haptics';
-const MIN_GAP_MS = 38;
+const MIN_GAP_MS = 70;
 
-/** Patterns in ms: [buzz, pause, buzz, ...]. Short and crisp, never a long rumble. */
+/**
+ * Patterns in ms: [buzz, pause, buzz, ...]. Many Android vibration motors
+ * cannot produce a felt pulse under ~20-30 ms, so even the lightest tick is
+ * long enough to register; the heavier moments are clearly stronger.
+ */
 export const Haptic = {
   /** A word struck, a row passing. */
-  tick: [7],
+  tick: [24],
   /** A hard cut in the montage. */
-  cut: [13],
+  cut: [38],
   /** A new step or stop. */
-  step: [18],
+  step: [45],
   /** Something lands: the stadium, the night, the window settling. */
-  land: [26],
+  land: [80],
   /** Opening into the film: a short rising pulse. */
-  rise: [8, 45, 12, 45, 22],
+  rise: [30, 70, 45, 70, 90],
   /** The film closing behind you. */
-  fall: [20, 45, 10],
+  fall: [80, 70, 35],
   /** Copied, sent. */
-  success: [10, 55, 18],
+  success: [40, 80, 65],
+  /** The test button in the contact panel: long enough to feel on any phone. */
+  test: [220],
 } as const;
 
 type Pattern = readonly number[];
@@ -113,6 +119,21 @@ export function buzz(pattern: Pattern, opts: { gesture?: boolean } = {}) {
     last = now;
     iosTick();
   }
+}
+
+/**
+ * Test from a tap: one long pulse, ignoring the on/off switch. Returns
+ * 'ok' when the browser accepted it, 'blocked' when it refused, 'tap' on
+ * iPhone (tap tick only) and 'none' when there is no vibration API.
+ */
+export function testBuzz(): 'ok' | 'blocked' | 'tap' | 'none' {
+  if (!hasWindow()) return 'none';
+  if (canVibrate()) return navigator.vibrate([...Haptic.test]) ? 'ok' : 'blocked';
+  if (isIOS()) {
+    iosTick();
+    return 'tap';
+  }
+  return 'none';
 }
 
 /**
