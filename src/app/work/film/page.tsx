@@ -1,23 +1,22 @@
 import type { Metadata } from 'next';
 import { StageCanvas } from '@/components/film/StageCanvas';
-import { FilmReel } from '@/components/work/FilmReel';
-import { shots } from '@content/work';
+import { Hud } from '@/components/film/Hud';
+import { Chapters } from '@/components/film/Chapters';
+import { home, shots } from '@content/work';
 
 export const metadata: Metadata = {
   title: 'Selected films · Moin Vahora',
   description: 'Selected work by Moin Vahora, one project per screen.',
 };
 
-/**
- * Cinema mode: dark, full-bleed, nothing except the film and the slate.
- * No global HUD on this page; a minimal exit sits in the corner.
- */
+/** The cinematic reel of selected work: one project per screen over the WebGL stage. */
 export default function FilmPage() {
   return (
     <>
       <StageCanvas shots={shots} />
+      <Hud name={home.hud.name} primary={{ label: 'All work', href: '/work' }} contact={home.hud.contact} />
       <main>
-        <FilmReel />
+        <Chapters />
       </main>
     </>
   );
