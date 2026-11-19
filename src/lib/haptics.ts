@@ -13,30 +13,31 @@
  */
 
 const KEY = 'moin.haptics';
-const MIN_GAP_MS = 70;
+const MIN_GAP_MS = 85;
 
 /**
- * Patterns in ms: [buzz, pause, buzz, ...]. Many Android vibration motors
- * cannot produce a felt pulse under ~20-30 ms, so even the lightest tick is
- * long enough to register; the heavier moments are clearly stronger.
+ * Patterns in ms: [buzz, pause, buzz, ...]. The web can only set duration,
+ * not motor strength (the phone's intensity setting decides that), so the
+ * pulses are deliberately long and punchy: even the lightest tick is felt
+ * clearly, and the big moments hit hard.
  */
 export const Haptic = {
-  /** A word struck, a row passing. */
-  tick: [24],
-  /** A hard cut in the montage. */
-  cut: [38],
+  /** A word struck, a row passing, a tap. */
+  tick: [45],
+  /** A hard cut in the montage: a punch. */
+  cut: [75],
   /** A new step or stop. */
-  step: [45],
-  /** Something lands: the stadium, the night, the window settling. */
-  land: [80],
-  /** Opening into the film: a short rising pulse. */
-  rise: [30, 70, 45, 70, 90],
-  /** The film closing behind you. */
-  fall: [80, 70, 35],
-  /** Copied, sent. */
-  success: [40, 80, 65],
-  /** The test button in the contact panel: long enough to feel on any phone. */
-  test: [220],
+  step: [80],
+  /** Something lands: the stadium, the night, touchdown. */
+  land: [170],
+  /** Opening into the film: a rising triple hit. */
+  rise: [60, 50, 100, 50, 200],
+  /** The film closing behind you: heavy, then fading. */
+  fall: [170, 60, 70],
+  /** Copied, sent: a double knock. */
+  success: [80, 70, 140],
+  /** The test button in the contact panel: unmistakable on any phone. */
+  test: [450],
 } as const;
 
 type Pattern = readonly number[];
