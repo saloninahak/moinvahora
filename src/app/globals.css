@@ -4595,3 +4595,327 @@ html.is-modal .dock {
     animation: none;
   }
 }
+
+/* ==================================================================
+   All work: folders (sidebar on desktop, swipe strip on phones)
+   ================================================================== */
+
+.files {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+}
+
+.files__side,
+.files__main {
+  min-width: 0;
+}
+
+.files__strip {
+  position: relative;
+  display: flex;
+  gap: 0.6rem;
+  margin: 0 calc(var(--pad) * -1);
+  padding: 2.4rem var(--pad) 0.6rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.files__strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* One folder: a tab, a glass body, and the frames inside peeking out of the top. */
+.fold {
+  position: relative;
+  flex: 0 0 auto;
+  width: 10.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mute);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  scroll-snap-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fold::before {
+  /* The tab. */
+  content: '';
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: -0.55rem;
+  width: 42%;
+  height: 0.75rem;
+  border: 1px solid var(--glass-line);
+  border-bottom: 0;
+  border-radius: 0.55rem 0.9rem 0 0;
+  background: rgba(20, 24, 28, 0.62);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  transition: background 0.35s ease;
+}
+
+.fold__body {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 0.5rem;
+  min-height: 4.4rem;
+  padding: 0.85rem 0.9rem 0.8rem;
+  border: 1px solid var(--glass-line);
+  border-radius: 0 0.9rem 0.9rem 0.9rem;
+  background: var(--glass);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    background 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease;
+}
+
+.fold__name {
+  font-size: 0.98rem;
+  font-weight: 600;
+  font-stretch: 90%;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.fold__n {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+}
+
+/* The frames inside, tucked behind the body; they rise out on hover / open. */
+.fold__peek {
+  position: absolute;
+  z-index: 1;
+  right: 0.7rem;
+  top: 0.3rem;
+  width: 4.6rem;
+  height: 3.2rem;
+  pointer-events: none;
+}
+
+.fold__peek img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(243, 239, 231, 0.18);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  filter: saturate(0.8) brightness(0.85);
+  transform: translate(calc(var(--k) * -0.9rem), 0) rotate(calc((var(--k) - 1) * 4deg));
+  transition:
+    transform 0.6s var(--ease),
+    filter 0.4s ease;
+  transition-delay: calc(var(--k) * 40ms);
+}
+
+/* The folder in hand sits above its neighbours, so its frames show over them. */
+.fold:hover,
+.fold:focus-visible,
+.fold[aria-pressed='true'] {
+  z-index: 3;
+}
+
+.fold:hover .fold__peek img,
+.fold:focus-visible .fold__peek img,
+.fold[aria-pressed='true'] .fold__peek img {
+  filter: saturate(1) brightness(1);
+  transform: translate(calc(var(--k) * -1.15rem), -1.7rem) rotate(calc((var(--k) - 1) * 8deg));
+}
+
+.fold:hover .fold__body,
+.fold:focus-visible .fold__body {
+  color: var(--paper);
+  border-color: rgba(243, 239, 231, 0.3);
+}
+
+/* Open folder: paper-coloured, like the active dock button. */
+.fold[aria-pressed='true'] .fold__body {
+  background: rgba(243, 239, 231, 0.94);
+  border-color: transparent;
+  color: var(--ink);
+}
+
+.fold[aria-pressed='true']::before {
+  background: rgba(243, 239, 231, 0.94);
+  border-color: transparent;
+}
+
+.fold[aria-pressed='true'] .fold__n {
+  color: rgba(6, 9, 12, 0.55);
+}
+
+.fold:focus-visible {
+  outline: none;
+}
+
+.fold:focus-visible .fold__body {
+  outline: 1px solid var(--paper);
+  outline-offset: 3px;
+}
+
+/* Open folder header */
+.files__head {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: clamp(1.25rem, 3vh, 2rem);
+  animation: rise 0.6s var(--ease) both;
+}
+
+.files__path {
+  display: flex;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.files__title {
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  font-weight: 620;
+  font-stretch: 84%;
+  letter-spacing: -0.024em;
+  line-height: 1;
+}
+
+.files__note {
+  max-width: 52ch;
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  color: var(--mute);
+}
+
+.files__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.files__roles li {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  background: rgba(6, 9, 12, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 0.78rem;
+  color: var(--mute);
+}
+
+/* Rows inside the narrower main column. */
+.files__main .row__a {
+  grid-template-columns: 2.6rem minmax(0, 2fr) minmax(0, 1.3fr) minmax(0, 1fr) 5.5rem 1.2rem;
+}
+
+.files__main .row__title {
+  font-size: clamp(1.3rem, 2.2vw, 2.3rem);
+}
+
+@media (max-width: 1280px) {
+  .files__main .row__cats {
+    display: none;
+  }
+
+  .files__main .row__a {
+    grid-template-columns: 2.6rem minmax(0, 2fr) minmax(0, 1.2fr) 5.5rem 1.2rem;
+  }
+}
+
+/* Desktop: the folders become a sticky sidebar. */
+@media (min-width: 960px) {
+  .files {
+    grid-template-columns: clamp(15rem, 20vw, 18.5rem) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .files__side {
+    position: sticky;
+    top: 4.5rem;
+  }
+
+  .files__strip {
+    flex-direction: column;
+    gap: 0.95rem;
+    margin: 0;
+    padding: 2rem 0 1rem;
+    overflow: visible;
+  }
+
+  .fold {
+    width: 100%;
+  }
+
+  .fold__body {
+    min-height: 3.1rem;
+    padding: 0.7rem 1rem;
+    align-items: center;
+  }
+
+  .files__strip {
+    gap: 0.85rem;
+  }
+
+  .fold__peek {
+    top: 0.35rem;
+    height: 2.3rem;
+  }
+
+  .fold__peek {
+    right: 3rem;
+  }
+
+  /* The open folder slides out a little, like a file pulled from a drawer. */
+  .fold[aria-pressed='true'] {
+    transform: translateX(0.5rem);
+  }
+
+  .fold {
+    transition: transform 0.5s var(--ease);
+  }
+}
+
+/* Phones: lighter rows. */
+@media (max-width: 720px) {
+  .files__main .row__a {
+    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    row-gap: 0.25rem;
+  }
+
+  .files__main .row__client {
+    grid-column: 2 / 4;
+    grid-row: 2;
+    font-size: 0.85rem;
+  }
+
+  .files__main .row__go {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fold__peek img,
+  .fold {
+    transition: none;
+  }
+}
