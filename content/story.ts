@@ -106,7 +106,8 @@ export const story = {
       tag: 'Behind the camera',
       caption: 'On set · Laksh Maheshwari Live',
     },
-    sub: 'The idea, the shoot, the cut and the campaign. Ten years from a news desk timeline to whole brands.',
+    // Says he leads (brief, team, launch) without saying "manager".
+    sub: 'It started at the edit. These days the brief, the team and the launch come to me first.',
     imdb: { badge: 'IMDb', label: 'Featured on IMDb', cta: 'View credits', href: 'https://www.imdb.com/name/nm11477653/' },
     cue: 'Scroll',
     frameCaption: 'Now showing · Selected work',
