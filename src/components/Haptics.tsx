@@ -38,7 +38,13 @@ export function HapticTaps() {
         e.stopPropagation();
         // Haptics off: cancel the toggle (no tick); the host still gets its click.
         if (!hapticsOn()) e.preventDefault();
-        host.click();
+        // Hand the click to the host only after this click has finished and the
+        // switch has toggled (that toggle is the tick). Clicking the host first
+        // lets React re-render it at once (e.g. "Copy" → "Copied"), which can
+        // remove this label before the switch flips, and then nothing plays.
+        // WebKit carries the tap's permission into a short timer, so links that
+        // open a new tab still work.
+        window.setTimeout(() => host.isConnected && host.click(), 0);
       });
       label.append(sw);
       if (getComputedStyle(host).position === 'static') host.style.position = 'relative';

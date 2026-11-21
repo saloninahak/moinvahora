@@ -30,7 +30,7 @@ try {
   await wait(800);
   say('A vib after scroll (count):', await a.evaluate(() => window.__vib.length), await a.evaluate(() => window.__vib.slice(0, 12).join(' ')));
   // Reload: loader skipped, hint should show.
-  await a.reload({ waitUntil: 'domcontentloaded' });
+  await a.reload({ waitUntil: 'domcontentloaded', timeout: 90000 });
   await wait(4000);
   say('A hint shown after reload:', await a.evaluate(() => !!document.querySelector('.hhint.is-on')));
   await a.screenshot({ path: 'tools/shot/out/hap-hint.png' });
@@ -64,6 +64,14 @@ try {
   await wait(1200);
   say('I contact open:', await i.evaluate(() => !!document.querySelector('.cp.is-open')), 'ticks:', await i.evaluate(() => window.__ticks));
   await i.screenshot({ path: 'tools/shot/out/hap-ios-contact.png' });
+  // Buttons whose text changes on tap (Copy -> Copied) and chips inside the panel.
+  for (const sel of ['.cp__copy', '.cp__chip', '.cp__test']) {
+    const b = await i.evaluate((s) => { const el = document.querySelector(s); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, top: document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)?.className }; }, sel);
+    const before = await i.evaluate(() => window.__ticks);
+    await i.touchscreen.tap(b.x, b.y);
+    await wait(700);
+    say('I tap', sel, 'top:', b.top, 'tick:', (await i.evaluate(() => window.__ticks)) - before, 'state:', await i.evaluate((s) => { const el = document.querySelector(s); return el.getAttribute('aria-pressed') ?? el.textContent; }, sel));
+  }
   await i.close();
 } catch (e) {
   say('ERROR', e.stack || e);
