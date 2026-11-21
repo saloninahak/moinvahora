@@ -4567,8 +4567,9 @@ html.is-modal .dock {
   transform: translate(-50%, 0);
 }
 
-/* iPhone: a transparent label over each button and link, wired to a hidden switch. */
-.hx {
+/* iPhone: a transparent label over each button and link, wired to a hidden switch.
+   (Named .htap: .hx is the hero.) */
+.htap {
   position: absolute;
   inset: 0;
   z-index: 9999;
@@ -4581,7 +4582,7 @@ html.is-modal .dock {
   cursor: pointer;
 }
 
-.hx input {
+.htap input {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -5188,6 +5189,216 @@ html.is-modal .dock {
 @media (prefers-reduced-motion: reduce) {
   .tile,
   .tile__peek img {
+    transition: none;
+  }
+}
+
+/* ==================================================================
+   HERO v2: "I build ___." The word rolls; credits roll in the open space.
+   ================================================================== */
+
+.hx--roll {
+  grid-template-rows: minmax(0, 1fr) auto auto;
+}
+
+.hx__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 2rem;
+  min-height: 0;
+}
+
+/* End credits */
+.hx__credits {
+  justify-self: end;
+  width: min(22rem, 32vw);
+  text-align: right;
+}
+
+.hx__creditsk {
+  margin: 0 0 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.hx__rollwin {
+  height: clamp(10rem, 34vh, 20rem);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+}
+
+.hx__roll {
+  display: grid;
+  gap: 1.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Two copies of the list: rolling up by half loops without a seam. */
+  animation: credits-roll calc(var(--rows) * 3.6s) linear infinite;
+}
+
+.hx__credits:hover .hx__roll {
+  animation-play-state: paused;
+}
+
+.hx__roll li {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.hx__role {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.hx__what {
+  font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+  font-weight: 560;
+  font-stretch: 90%;
+  color: var(--paper);
+}
+
+@keyframes credits-roll {
+  to {
+    transform: translateY(calc(-50% - 0.575rem));
+  }
+}
+
+/* Lead line with the reel counter beside it */
+.hx--roll .hx__title .ln:first-child {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+}
+
+.hx__meta {
+  display: grid;
+  gap: 0.35rem;
+  padding-bottom: 0.7em;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 400;
+  font-stretch: 100%;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.hx__of {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: 0.1rem;
+  color: var(--paper);
+  white-space: nowrap;
+}
+
+/* The slot: every word stacked in one cell; one is on screen at a time. */
+.hx__slot {
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  /* Sized so the longest word ("launches.") fits the width. */
+  font-size: min(25.5vw, 40vh);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  /* Room for ascenders (b, d, h) and descenders (g). */
+  padding: 0.1em 0 0.18em;
+  margin: -0.1em 0 -0.18em;
+}
+
+.hx--roll .hx__title .ln:last-child {
+  padding-bottom: 0.04em;
+}
+
+/* Beat the reveal's `.ln > span { display: inline-block }`. */
+.hx--roll .ln > .hx__slot,
+.hx--roll .ln > .hx__meta {
+  display: grid;
+}
+
+.hx--roll .hx__word {
+  display: block;
+}
+
+.hx__word {
+  grid-area: 1 / 1;
+  position: relative;
+  justify-self: start;
+  transform: translateY(105%) skewY(6deg);
+  transform-origin: 0 100%;
+  filter: blur(6px);
+  opacity: 0;
+  transition: none;
+}
+
+.hx__word.is-on,
+.hx__word.is-out {
+  transition:
+    transform 1s cubic-bezier(0.76, 0, 0.24, 1),
+    filter 1s ease,
+    opacity 0.6s ease;
+}
+
+.hx__word.is-on {
+  transform: none;
+  filter: none;
+  opacity: 1;
+}
+
+.hx__word.is-out {
+  transform: translateY(-105%) skewY(-4deg);
+  filter: blur(6px);
+  opacity: 0;
+}
+
+.hx--roll .hx__layer {
+  opacity: 1;
+}
+
+@media (max-width: 809px) {
+  .hx__top {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 2.25rem;
+  }
+
+  .hx__credits {
+    justify-self: start;
+    width: 100%;
+    text-align: left;
+  }
+
+  .hx__rollwin {
+    height: clamp(9rem, 26vh, 13rem);
+  }
+
+  .hx__slot {
+    font-size: 25vw;
+  }
+
+  .hx__meta {
+    padding-bottom: 0.55em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hx__roll {
+    animation: none;
+  }
+
+  .hx__word.is-on,
+  .hx__word.is-out {
     transition: none;
   }
 }

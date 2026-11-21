@@ -97,14 +97,33 @@ export const story = {
     kicker: 'Moin Vahora · Ahmedabad',
     /** Reads as one sentence with the word below: "I build brands." */
     lead: 'I build',
-    /** The word his work plays inside. */
-    word: 'brands.',
-    /** Moin at work, standing in the hero's right side. */
-    onset: {
-      src: '/images/moin-filming.png',
-      alt: 'Moin Vahora filming on a gimbal at Laksh Maheshwari Live',
-      tag: 'Behind the camera',
-      caption: 'On set · Laksh Maheshwari Live',
+    /**
+     * The word rolls through what he builds; each one plays its own work
+     * inside the letters. Every word is backed by a project on /work.
+     */
+    words: [
+      { w: 'brands.', img: '/images/project-bmw.jpg', of: 'BMW' },
+      { w: 'launches.', img: '/images/project-mfs210.jpg', of: 'MFS210' },
+      { w: 'stages.', img: '/images/project-aishwarya.jpg', of: 'Rafinaama' },
+      { w: 'nights.', img: '/images/project-icc.jpg', of: 'ICC T20 World Cup Final' },
+      { w: 'stories.', img: '/images/hero-cinema.jpg', of: 'Hellaro' },
+    ],
+    /**
+     * End credits, rolling in the hero's open space: the roles he has held,
+     * so the range (lead, head, editor) shows without being claimed.
+     */
+    credits: {
+      title: 'Credits',
+      list: [
+        { role: 'Creative Head', what: 'Rafinaama · 50+ artists on stage' },
+        { role: 'Creative Associate & Team Lead', what: 'Mantra Softech' },
+        { role: 'Brand & campaign, four editions', what: 'Rangtaali · Melbourne' },
+        { role: 'Chief Editor', what: 'Iktara' },
+        { role: 'Launch films', what: 'BMW iX · MFS210' },
+        { role: 'Coverage', what: 'ICC Men’s T20 World Cup Final' },
+        { role: 'Documentary', what: 'Hellaro · National Award film' },
+        { role: 'Content & concept', what: 'Navshakti Navratri' },
+      ],
     },
     // Says he leads (brief, team, launch) without saying "manager".
     sub: 'It started at the edit. These days the brief, the team and the launch come to me first.',

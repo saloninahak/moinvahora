@@ -5,7 +5,7 @@ import { flags } from '@/lib/timeline';
 import { HAPTICS_EVENT, Haptic, buzz, hapticsOn, isIOS, needsFirstTap } from '@/lib/haptics';
 
 const HOSTS = 'a[href], button, [role="button"], summary';
-const SKIP = '[data-no-tick], .hx, label, input, select, textarea';
+const SKIP = '[data-no-tick], .htap, label, input, select, textarea';
 
 /**
  * iPhone taps. Safari's only page haptic is the tick of a native switch, and
@@ -23,9 +23,9 @@ export function HapticTaps() {
     if (!isIOS()) return;
 
     const arm = (host: HTMLElement) => {
-      if (host.matches(SKIP) || host.closest('label') || host.querySelector(':scope > .hx')) return;
+      if (host.matches(SKIP) || host.closest('label') || host.querySelector(':scope > .htap')) return;
       const label = document.createElement('label');
-      label.className = 'hx';
+      label.className = 'htap';
       label.setAttribute('aria-hidden', 'true');
       const sw = document.createElement('input');
       sw.type = 'checkbox';

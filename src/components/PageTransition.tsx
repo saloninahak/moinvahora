@@ -28,7 +28,7 @@ export function PageTransition() {
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       // iPhone tap label (HapticTaps): let it tick; it re-sends the click to the link itself.
-      if ((e.target as Element | null)?.closest?.('.hx')) return;
+      if ((e.target as Element | null)?.closest?.('.htap')) return;
       const a = (e.target as Element | null)?.closest('a');
       if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
       const url = new URL(a.href, location.href);

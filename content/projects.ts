@@ -208,8 +208,7 @@ export const projects: Project[] = [
     place: 'Palladium Mall, Ahmedabad',
     cats: ['stage', 'music'],
     role: ['Cinematography', 'Event coverage', 'Editing'],
-    // Real frame: Moin filming at Laksh Maheshwari Live.
-    image: '/images/moin-filming.png',
+    image: '/images/project-ishq-sufiyana.jpg',
     summary: 'Storyteller Laksh Maheshwari’s evening of Khusro, Bulleh Shah and Kabir.',
     story: [
       'Ishq Sufiyana is a musical storytelling evening by Laksh Maheshwari, told through the stories of Amir Khusro, Bulleh Shah and Kabir.',

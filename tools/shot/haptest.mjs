@@ -47,7 +47,7 @@ try {
   await i.evaluateOnNewDocument(() => {
     delete Navigator.prototype.vibrate;
     window.__ticks = 0;
-    document.addEventListener('change', (e) => { if (e.target.closest && e.target.closest('.hx')) window.__ticks++; }, true);
+    document.addEventListener('change', (e) => { if (e.target.closest && e.target.closest('.htap')) window.__ticks++; }, true);
   });
   await i.goto(BASE + '/', { waitUntil: 'domcontentloaded', timeout: 90000 });
   await wait(9000);
