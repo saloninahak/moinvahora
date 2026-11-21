@@ -1,2 +1,3 @@
 Set-Location 'e:\other\moin-film'
-(git status -sb | Select-Object -First 15; git log --oneline -2) *> tools\gs.txt
+$o = 'tools\gs-' + (Get-Date -Format 'HHmmss') + '.txt'
+(Get-Content tools\ship.txt; '--- git ---'; git log --oneline -3; git status -sb | Select-Object -First 12) *> $o

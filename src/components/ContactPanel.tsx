@@ -142,7 +142,7 @@ export function ContactPanel() {
 
   // Swipe down to close (phones): drag from the grab bar or the header.
   const onDragStart = (e: RPointerEvent) => {
-    if (e.pointerType === 'mouse' || (e.target as HTMLElement).closest('button')) return;
+    if (e.pointerType === 'mouse' || (e.target as HTMLElement).closest('button, a, label')) return;
     drag.current = { y0: e.clientY, dy: 0, on: true };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
@@ -170,11 +170,11 @@ export function ContactPanel() {
     const r = testBuzz();
     setTestNote(
       r === 'ok'
-        ? 'Sent. Nothing? Turn on vibration or touch feedback in your phone’s sound settings.'
+        ? 'Sent. Nothing? Take the phone off Silent / Do Not Disturb and turn on touch vibration.'
         : r === 'blocked'
-          ? 'This browser blocked vibration. Try Chrome.'
+          ? 'This browser blocked vibration. Open the site in Chrome.'
           : r === 'tap'
-            ? 'iPhone: taps only, no scroll haptics.'
+            ? 'iPhone ticks on every tap. Nothing? Settings › Sounds & Haptics › System Haptics.'
             : 'No vibration on this device.',
     );
   };
@@ -254,7 +254,7 @@ export function ContactPanel() {
           {support !== 'none' ? (
             <span className="cp__hap">
               <label className="cp__toggle">
-                <input type="checkbox" role="switch" checked={haptic} onChange={toggleHaptics} />
+                <input type="checkbox" role="switch" {...{ switch: '' }} checked={haptic} onChange={toggleHaptics} />
                 <span className="cp__track" aria-hidden="true">
                   <i />
                 </span>

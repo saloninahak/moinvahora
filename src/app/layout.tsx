@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Geist_Mono } from 'next/font/google';
 import { SmoothScroll } from '@/components/SmoothScroll';
 import { PageTransition } from '@/components/PageTransition';
+import { HapticHint, HapticTaps } from '@/components/Haptics';
 import { story } from '@content/story';
 import './globals.css';
 
@@ -41,6 +42,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <SmoothScroll>{children}</SmoothScroll>
         <PageTransition />
+        <HapticTaps />
+        <HapticHint label="Tap once to feel the film" />
       </body>
     </html>
   );

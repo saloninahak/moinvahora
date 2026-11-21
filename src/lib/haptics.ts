@@ -3,17 +3,22 @@
 /**
  * Haptics for phones.
  *
- * - Android browsers: navigator.vibrate. Browsers only allow it after the
- *   visitor has tapped the page once, so scroll haptics start after the
- *   first tap (any tap: the dock, a link, the page).
- * - iPhone: Safari has no vibrate API. iOS 18+ plays a light system tick
- *   when a native switch toggles, so taps (not scrolling) use that.
+ * - Android (Chrome, Samsung Internet, Edge): navigator.vibrate. Chrome
+ *   blocks it until the visitor has tapped the page once; a scroll does not
+ *   count as a tap. The loader asks for one tap on touch phones, and a small
+ *   hint asks again when the loader is skipped (see HapticGate).
+ * - iPhone: Safari has no vibrate API. The only haptic a page can play is
+ *   the system tick of a native <input switch>, and since iOS 26.5 only when
+ *   the visitor's own tap lands on a label for it. HapticTaps lays such a
+ *   label over every button and link, so every tap ticks. Scrolling can't.
  * - Off by default under reduced motion; the visitor can switch it on or
  *   off in the contact panel, and the choice is remembered.
  */
 
 const KEY = 'moin.haptics';
 const MIN_GAP_MS = 85;
+/** Fired on window when the visitor turns haptics on or off. */
+export const HAPTICS_EVENT = 'moin:haptics';
 
 /**
  * Patterns in ms: [buzz, pause, buzz, ...]. The web can only set duration,
@@ -45,16 +50,22 @@ type Pattern = readonly number[];
 let enabled: boolean | null = null;
 let last = 0;
 let primed = false;
-let iosSwitch: HTMLLabelElement | null = null;
 const seen = new Map<string, number>();
 
 const hasWindow = () => typeof window !== 'undefined';
-const canVibrate = () => hasWindow() && typeof navigator.vibrate === 'function';
-const isIOS = () => hasWindow() && /iP(hone|ad|od)/.test(navigator.userAgent) && !canVibrate();
+export const canVibrate = () => hasWindow() && typeof navigator.vibrate === 'function';
+const touch = () => hasWindow() && window.matchMedia('(pointer: coarse)').matches;
+
+/** iPhone / iPad (iPadOS reports itself as a Mac with touch). */
+export function isIOS() {
+  if (!hasWindow() || canVibrate()) return false;
+  const ua = navigator.userAgent;
+  return /iP(hone|ad|od)/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+}
 
 /** What this device can do: 'vibrate' (Android), 'tap' (iPhone, taps only) or 'none'. */
 export function hapticsSupport(): 'vibrate' | 'tap' | 'none' {
-  if (canVibrate() && window.matchMedia('(pointer: coarse)').matches) return 'vibrate';
+  if (canVibrate() && touch()) return 'vibrate';
   if (isIOS()) return 'tap';
   return 'none';
 }
@@ -78,63 +89,55 @@ export function setHapticsOn(on: boolean) {
   } catch {
     /* ignore */
   }
+  window.dispatchEvent(new Event(HAPTICS_EVENT));
 }
 
 /** Forget per-section state (on page change), so a return visit starts clean. */
 export const resetHaptics = () => seen.clear();
 
-function activated() {
+/** Whether the browser will accept a vibration now (the page has had a tap). */
+export function vibrationUnlocked() {
   const ua = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
   return ua ? ua.hasBeenActive : primed;
 }
 
-function iosTick() {
-  if (!iosSwitch) {
-    const label = document.createElement('label');
-    label.setAttribute('aria-hidden', 'true');
-    label.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.setAttribute('switch', '');
-    input.tabIndex = -1;
-    label.appendChild(input);
-    document.body.appendChild(label);
-    iosSwitch = label;
-  }
-  iosSwitch.click();
+/** Android phone with haptics on that still needs its first tap. */
+export function needsFirstTap() {
+  return hasWindow() && hapticsOn() && hapticsSupport() === 'vibrate' && !vibrationUnlocked();
 }
 
 /**
- * Play a pattern. `gesture: true` when called from a tap handler, which also
- * lets iPhones play their tap tick.
+ * Play a pattern on Android. `gesture: true` when called from a tap handler.
+ * On iPhone this does nothing: the tap itself ticks through HapticTaps.
  */
 export function buzz(pattern: Pattern, opts: { gesture?: boolean } = {}) {
-  if (!hasWindow() || !hapticsOn()) return;
+  if (!hasWindow() || !hapticsOn() || !canVibrate()) return;
+  if (!opts.gesture && !vibrationUnlocked()) return;
   const now = performance.now();
   if (now - last < MIN_GAP_MS) return;
-  if (canVibrate()) {
-    if (!opts.gesture && !activated()) return;
-    last = now;
+  last = now;
+  try {
     navigator.vibrate([...pattern]);
-  } else if (opts.gesture && isIOS()) {
-    last = now;
-    iosTick();
+  } catch {
+    /* never worth an exception */
   }
 }
 
 /**
  * Test from a tap: one long pulse, ignoring the on/off switch. Returns
  * 'ok' when the browser accepted it, 'blocked' when it refused, 'tap' on
- * iPhone (tap tick only) and 'none' when there is no vibration API.
+ * iPhone (the tap on the button ticks) and 'none' with no vibration at all.
  */
 export function testBuzz(): 'ok' | 'blocked' | 'tap' | 'none' {
   if (!hasWindow()) return 'none';
-  if (canVibrate()) return navigator.vibrate([...Haptic.test]) ? 'ok' : 'blocked';
-  if (isIOS()) {
-    iosTick();
-    return 'tap';
+  if (canVibrate()) {
+    try {
+      return navigator.vibrate([...Haptic.test]) ? 'ok' : 'blocked';
+    } catch {
+      return 'blocked';
+    }
   }
-  return 'none';
+  return isIOS() ? 'tap' : 'none';
 }
 
 /**
@@ -149,13 +152,11 @@ export function hapticOnChange(key: string, value: number, pattern: Pattern) {
   buzz(pattern);
 }
 
-// Browsers without navigator.userActivation: remember the first tap.
+// Browsers without navigator.userActivation: remember the first real tap.
 if (hasWindow()) {
-  window.addEventListener(
-    'pointerdown',
-    () => {
-      primed = true;
-    },
-    { once: true, passive: true },
-  );
+  const prime = () => {
+    primed = true;
+  };
+  window.addEventListener('pointerup', prime, { once: true, passive: true });
+  window.addEventListener('keydown', prime, { once: true, passive: true });
 }

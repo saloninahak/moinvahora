@@ -9,7 +9,7 @@ if ($b -ne 0) { "STOPPED: build failed, nothing pushed" | Out-File -Append $log;
 git add -A 2>&1 | Out-Null
 "--- staged ---" | Out-File -Append $log
 git diff --cached --name-only 2>&1 | Out-File -Append $log
-git -c user.name="Moin Vahora" -c user.email="vahoramoin2896@gmail.com" commit -q -m "Work: cream Ledger index vs black Cinema reel" 2>&1 | Out-File -Append $log
+git -c user.name="Moin Vahora" -c user.email="vahoramoin2896@gmail.com" commit -q -m "Haptics that work: iPhone tap labels (iOS 26.5+), Android first-tap unlock" 2>&1 | Out-File -Append $log
 git push -q origin main 2>&1 | Out-File -Append $log
 "--- pushed ---" | Out-File -Append $log
 git log --oneline -1 2>&1 | Out-File -Append $log

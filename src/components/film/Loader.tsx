@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { flags } from '@/lib/timeline';
 import { lockScroll } from '@/lib/lenis';
+import { Haptic, buzz, needsFirstTap } from '@/lib/haptics';
 
 const SEEN = 'moin.loaded';
 /** Minimum time on screen: long enough to read as intentional, short enough not to annoy. */
@@ -115,6 +116,23 @@ export function Loader({ frames, hero, name }: { frames: readonly Frame[]; hero:
       // The hero fades in under the last flip frame; the flipbook drops when the window opens.
       heroImg?.classList.add('is-on');
       if (labelRef.current) labelRef.current.textContent = '';
+      // Android: Chrome only vibrates after a tap, and scrolling is not one.
+      // Hold on the hero and ask for the tap, so the film can be felt from the first cut.
+      if (needsFirstTap()) {
+        el!.classList.add('is-wait');
+        const go = () => {
+          el!.removeEventListener('pointerup', go);
+          el!.classList.remove('is-wait');
+          buzz(Haptic.rise, { gesture: true });
+          open();
+        };
+        el!.addEventListener('pointerup', go);
+        return;
+      }
+      open();
+    }
+
+    function open() {
       // Let the hero frame land for a beat, then open the window.
       window.setTimeout(() => setPhase('open'), reduced ? 0 : 160);
       try {
@@ -161,6 +179,10 @@ export function Loader({ frames, hero, name }: { frames: readonly Frame[]; hero:
         <span className="loader__pct" ref={pctRef}>
           000
         </span>
+      </div>
+      <div className="loader__tap" aria-hidden="true">
+        <i />
+        Tap to enter
       </div>
     </div>
   );
